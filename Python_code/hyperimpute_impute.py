@@ -36,8 +36,9 @@ def round_int(series, cate_num):
 
 
 ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
-base_path = Path("/Users/siysun/Desktop/PhD/SynthCPHS_benchmark/data_stored")
-cohort = "C19"
+
+cohorts = ["SynthSurvey"]
+base_path = Path("/Users/siysun/Desktop/NeurIPS25/data_stored")
 methods = ["MCAR", "MAR", "MNAR"]
 ratios = [50, 40, 30, 20, 10]
 Sampletime = 5
@@ -46,7 +47,7 @@ impute_method = "hyperimpute"
 ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
 # Output path for time recording
 output_file = Path(
-    f"/Users/siysun/Desktop/PhD/SynthCPHS_benchmark/imputation_times_{impute_method}_Synthetic_C19.csv"
+ f"/Users/siysun/Desktop/NeurIPS25/imputation_times_mean_mode_{cohorts[0]}.csv"
 )
 time_records = []
 
@@ -85,11 +86,6 @@ for method in tqdm(methods):
         save_dir_test.mkdir(parents=True, exist_ok=True)
 
         imputation_times = []  # Store times for averaging
-
-        if ratio in [40, 50]:
-            start_index = 0
-        else:
-            start_index = 2
 
         for index_file in tqdm(range(Sampletime)):
             # path for mask dataset
