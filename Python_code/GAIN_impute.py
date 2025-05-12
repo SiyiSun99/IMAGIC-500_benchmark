@@ -22,7 +22,7 @@ def round_to_nearest_half(value):
 
 
 ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
-base_path = Path("/Users/siysun/Desktop/PhD/SynthCPHS_benchmark/data_stored")
+base_path = Path(""/Users/siysun/Desktop/NeurIPS25/data_stored"")
 cohort = "C19"
 methods = ["MCAR", "MAR", "MNAR"]
 ratios = [10, 20, 30, 40, 50]
