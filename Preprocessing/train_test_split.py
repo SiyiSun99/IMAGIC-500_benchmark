@@ -11,11 +11,11 @@ import pandas as pd
 import numpy as np
 
 ## TODO: Add more data's target
-INFO = {"C19": "cat_HEALTH2"}  # the target column name in the dataset
+INFO = {"SynthSurvey": "cat_educ_attain"}  # the target column name in the dataset
 
-cohort = "C19"
+cohort = "SynthSurvey"
 ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
-base_path = Path("/Users/siysun/Desktop/PhD/SynthCPHS_benchmark/data_stored")
+base_path = Path("/Users/siysun/Desktop/NeurIPS25/data_stored")
 path = base_path / f"Completed_data/{cohort}/{cohort}_all.csv"
 split_ratio = 0.8
 # path to save the features(x) and labels(y)
