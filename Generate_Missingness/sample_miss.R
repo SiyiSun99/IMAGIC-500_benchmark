@@ -5,15 +5,15 @@ library(gdata)
 # Load custom functions - adopted from the GitHub repo: 
 # https://github.com/EagerSun/DL-vs-Stat_Impute
 ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER
-source('/Users/siysun/Desktop/PhD/SynthCPHS_benchmark/Generate_Missingness/amputation.R')
+source('/Users/siysun/Desktop/NeurIPS25/Generate_Missingness/amputation.R')
 
 ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER
-mainPath <- "/Users/siysun/Desktop/PhD/SynthCPHS_benchmark/data_stored/"
+mainPath <- "/Users/siysun/Desktop/NeurIPS25/data_stored"
 completeDataPath <- file.path(mainPath, "Completed_data")
 missingDataPath <- file.path(mainPath, "data_miss")
 cohort_miss_path <- file.path(missingDataPath, cohort)
-train_missingDataPath <- file.path(cohort_miss_path, "C19_train")
-test_missingDataPath <- file.path(cohort_miss_path, "C19_test")
+train_missingDataPath <- file.path(cohort_miss_path, paste0(cohort, "_train"))
+test_missingDataPath <- file.path(cohort_miss_path, paste0(cohort, "_test"))
 
 # Create directories
 dir.create(missingDataPath, showWarnings = FALSE)
@@ -24,7 +24,7 @@ dir.create(test_missingDataPath, showWarnings = FALSE)
 # Missing data configuration
 missingMechanism <- c("MCAR", "MAR", "MNAR")
 missList <- c(10, 20, 30, 40, 50)
-trainingSampleTime <- 1  # Number of samples for training
+trainingSampleTime <- 5  # Number of samples for training
 
 process_categorical_vars <- function(df) {
   # Get column names
@@ -56,8 +56,8 @@ process_csv <- function(input_path, output_base_path_miss) {
   full_df <- process_categorical_vars(full_df)
   
   # Define columns to exclude from missing data generation
-  # we don't generate missingness for the machine generated features
-  exclude_cols <- c(1, 2, 3, 4, 6, 13)
+  # we don't generate missingness for the household id
+  exclude_cols <- c(1)
   
   # Process for both missing data
   current_path <- output_base_path_miss
@@ -132,22 +132,22 @@ process_csv <- function(input_path, output_base_path_miss) {
   }
 }
 
-cohort <- "C19"  # Specify the cohort name
+cohort <- "SynthSurvey"  # Specify the cohort name
 
 # Source data path
 source_cohort_path <- file.path(completeDataPath, cohort)
 
 # Process train cohort file
-main_csv <- file.path(source_cohort_path, "C19_train.csv")
+main_csv <- file.path(source_cohort_path,  paste0(cohort, "_train.csv"))
 if (file.exists(main_csv)) {
   # Process the main file
   process_csv(main_csv, train_missingDataPath)
 }
 
-# # Process test cohort file
-# main_csv <- file.path(source_cohort_path, "C19_test.csv")
-# if (file.exists(main_csv)) {
-#   # Process the main file
-#   process_csv(main_csv, test_missingDataPath)
-# }
+# Process test cohort file
+main_csv <- file.path(source_cohort_path, paste0(cohort, "_test.csv"))
+if (file.exists(main_csv)) {
+  # Process the main file
+  process_csv(main_csv, test_missingDataPath)
+}
 
