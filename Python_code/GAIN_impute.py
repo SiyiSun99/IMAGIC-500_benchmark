@@ -20,10 +20,10 @@ def round_to_nearest_half(value):
     """
     return round(value * 2) / 2
 
-
-## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
-base_path = Path(""/Users/siysun/Desktop/NeurIPS25/data_stored"")
 cohort = "C19"
+## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
+base_path = Path( f"/Users/siysun/Desktop/NeurIPS25/imputation_times_mean_mode_{cohorts[0]}.csv")
+
 methods = ["MCAR", "MAR", "MNAR"]
 ratios = [10, 20, 30, 40, 50]
 Sampletime = 5
@@ -32,7 +32,7 @@ impute_method = "gain"
 ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
 # Output path for time recording
 output_file = Path(
-    f"/Users/siysun/Desktop/PhD/SynthCPHS_benchmark/imputation_times_{impute_method}_Synthetic_C19.csv"
+    f"/Users/siysun/Desktop/NeurIPS25/imputation_times_mean_mode_{cohorts[0]}.csv"
 )
 time_records = []
 
