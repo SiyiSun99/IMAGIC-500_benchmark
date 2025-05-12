@@ -37,7 +37,11 @@ if torch.cuda.is_available():
 else:
     device = "cpu"
 
-cohorts = ["C19"]
+cohorts = ["SynthSurvey"]
+base_path = Path("/Users/siysun/Desktop/NeurIPS25/data_stored")
+output_file = Path(
+ f"/Users/siysun/Desktop/NeurIPS25/imputation_times_mean_mode_{cohorts[0]}.csv"
+)
 miss_methods = ["MCAR"]
 miss_ratios = [10, 20, 30, 40, 50]
 Sampletime = 5
