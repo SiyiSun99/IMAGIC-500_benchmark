@@ -8,21 +8,24 @@
   <img src="https://img.shields.io/badge/Missing%20Ratio-10%25--50%25-darkred" alt="Missing Ratio Badge">
 </p>
 
-Welcome to the official repository for **SynthCPHS**, a large-scale synthetic household survey dataset and benchmarking framework introduced in our NeurIPS 2025 paper:
+Welcome to the official repository for **IMAGIC-500**, a large-scale synthetic benchmark dataset for evaluating missing data imputation methods in structured socioeconomic surveys introduced in our NeurIPS 2025 paper:
 
-> 📝 *"SynthCPHS: A 1-Million Sample Synthetic Household Survey Dataset and Benchmark for Missing Data Imputation."*
+> 📝 *"IMAGIC-500: IMputation benchmark on A Generative Imaginary Country (500k samples)"*
 
-SynthCPHS replicates the structure of the **Consumer Pyramids Household Survey (CPHS)** and enables **reproducible research** in missing data imputation for structured tabular datasets.
+Derived from the **World Bank's public Synthetic Data for an Imaginary Country (SDIC)** dataset, IMAGIC-500 contains 500,000 individuals across 100,000 households, capturing 19 key socioeconomic variables. This repository provides both the dataset and a comprehensive benchmark framework for testing imputation techniques under different missingness mechanisms (MCAR, MAR, MNAR) and ratios. Whether you're working with classical statistics, machine learning, or deep generative models, IMAGIC-500 is designed to support **robust, reproducible, and fair evaluation**.
+
+
 
 ---
 
 ## 🌟 Key Features
-- 📈 **1 million samples** with **25 socio-economic variables** (demographics, income, health, etc.)
+- 📈 **500k samples** with **19 socio-economic variables** (demographics, education, occupation, household expenditures, assets, etc)
+- 🗂️ Nested structure: individual → household → district → province
 - 🔍 Simulated missingness under **MCAR**, **MAR**, and **MNAR** mechanisms at varying ratios (10%–50%)
 - 🛠️ Comprehensive benchmark of **14 imputation methods**, covering statistical, machine learning, and deep learning approaches
 - ⚙️ Evaluation framework for:
   - **Imputation accuracy** (RMSE, F1)
-  - **Downstream task performance** (ROC-AUC degradation)
+  - **Downstream task performance** (Weighted ROC-AUC degradation)
   - **Computational efficiency** (runtime)
 
 ---
@@ -34,16 +37,16 @@ SynthCPHS replicates the structure of the **Consumer Pyramids Household Survey (
 First, clone the repository and navigate into the directory:
 
 ```bash
-git clone https://github.com/yourusername/SynthCPHS_benchmark.git
-cd SynthCPHS_benchmark
+git clone https://github.com/yourusername/IMAGIC-500_benchmark.git
+cd IMAGIC-500_benchmark
 ```
 
 ### Step 2: Download the Dataset
 
-Download the synthetic dataset (`C19_all.csv`) from Kaggle [here (link placeholder)](#) and save it to the following path within the repository:
+Download the synthetic dataset (`SynthSurvey.csv`) from Harvard Dataverse [here](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/7GMPBH) and save it to the following path within the repository:
 
 ```
-data_stored/Completed_data/C19/C19_all.csv
+data_stored/Completed_data/SynthSurvey/SynthSurvey_all.csv
 ```
 
 ---
@@ -78,8 +81,8 @@ data_stored/Completed_data/C19/C19_all.csv
 │   └── softimpute_impute.py
 ├── data_stored                 # Raw and processed data files
 │   └── Completed_data/
-│       └── C19/
-│           └── C19_all.csv
+│       └── SynthSurvey/
+│           └── SynthSurvey_all.csv
 ├── README.md
 └── requirements.txt            # Required Python packages
 ```
