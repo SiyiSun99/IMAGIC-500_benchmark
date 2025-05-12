@@ -56,7 +56,7 @@ data_stored/Completed_data/SynthSurvey/SynthSurvey_all.csv
 ```
 .
 ├── Evaluation                  # Scripts for performance evaluation
-│   ├── Downstream_performance.py
+│   ├── TabCSDI_post_processing.py
 │   ├── Downstream_performance.py
 │   └── Imputation_performance.py
 ├── Generate_Missingness        # R scripts to generate missing data
@@ -161,6 +161,12 @@ python Python_code/mean_mode_impute.py
 - For TabCSDI_impute, modify the `featuredim ` in `Python_code/TabCSDI_impute/parameters/config_TabCSDI.yaml`
 
 ### 5. 📈 Evaluation
+
+Before evaluation, if you are using TabCSDI-imputed datasets, you must first run the post-processing script to restore the `cat_hid` (household ID) variable, which is not missing but was dropped due to TabCSDI's modeling characteristics.
+
+```bash
+python Evaluation/TabCSDI_post_processing.py
+```
 
 To evaluate imputation performance:
 
