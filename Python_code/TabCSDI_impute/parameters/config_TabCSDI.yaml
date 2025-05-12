@@ -22,7 +22,7 @@ model:
   is_unconditional: 0
   timeemb: 128
   featureemb: 8
-  featuredim: 24
+  featuredim: 17
   target_strategy: "random"
   mixed: True
   token_emb_dim: 8
