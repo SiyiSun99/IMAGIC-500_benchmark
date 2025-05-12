@@ -17,11 +17,11 @@ from diffusion_utils import sample_step, impute_mask, round_to_nearest_half, rou
 warnings.filterwarnings("ignore")
 
 ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
-base_path = Path("/Users/siysun/Desktop/PhD/SynthCPHS_benchmark/data_stored")
+base_path = Path("/Users/siysun/Desktop/NeurIPS25/data_stored")
 ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
 # Output path for time recording
 output_file = Path(
-    f"/Users/siysun/Desktop/PhD/SynthCPHS_benchmark/imputation_times_diffputer_C19_Synthetic.csv"
+    f"/Users/siysun/Desktop/NeurIPS25/imputation_times_diffputer_SynthSurvey.csv"
 )
 time_records = []
 
@@ -40,9 +40,9 @@ else:
 cohorts = ["SynthSurvey"]
 base_path = Path("/Users/siysun/Desktop/NeurIPS25/data_stored")
 output_file = Path(
- f"/Users/siysun/Desktop/NeurIPS25/imputation_times_mean_mode_{cohorts[0]}.csv"
+ f"/Users/siysun/Desktop/NeurIPS25/imputation_times_diffputer_{cohorts[0]}.csv"
 )
-miss_methods = ["MCAR"]
+miss_methods = ["MCAR","MAR","MNAR"]
 miss_ratios = [10, 20, 30, 40, 50]
 Sampletime = 5
 
@@ -265,9 +265,7 @@ for cohort in cohorts:
                 imputed_data = imputed_con.join(imputed_cat)[all_cols]
                 # decode categorical
                 for col in imputed_data.columns:
-                    if col.startswith("con_TS_ON"):
-                        imputed_data[col] = round_to_nearest_half(imputed_data[col])
-                    elif col.startswith("con_"):
+                    if col.startswith("con_"):
                         imputed_data[col] = round(imputed_data[col])
                     else:
                         pass
@@ -342,9 +340,7 @@ for cohort in cohorts:
                 imputed_data = imputed_con.join(imputed_cat)[all_cols]
                 # decode categorical
                 for col in imputed_data.columns:
-                    if col.startswith("con_TS_ON"):
-                        imputed_data[col] = round_to_nearest_half(imputed_data[col])
-                    elif col.startswith("con_"):
+                    if col.startswith("con_"):
                         imputed_data[col] = round(imputed_data[col])
                     else:
                         pass
