@@ -668,7 +668,7 @@ if __name__ == "__main__":
     ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
     # Output path for time recording
     output_file = Path(
-     f"/Users/siysun/Desktop/NeurIPS25/imputation_times_mean_mode_{cohorts[0]}.csv"
+     f"/Users/siysun/Desktop/NeurIPS25/imputation_times_{impute_method}_{cohorts[0]}.csv"
     )
     time_records = []
 
