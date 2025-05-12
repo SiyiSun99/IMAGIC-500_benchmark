@@ -69,9 +69,9 @@ def create_missing_masks(source_dir: str, target_dir: str):
 if __name__ == "__main__":
     ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
     source_dir = (
-        "/Users/siysun/Desktop/PhD/SynthCPHS_benchmark/data_stored/data_miss/C19"
+        "/Users/siysun/Desktop/NeurIPS25/data_stored/data_miss/SynthSurvey"
     )
     target_dir = (
-        "/Users/siysun/Desktop/PhD/SynthCPHS_benchmark/data_stored/data_miss_mask/C19"
+        "/Users/siysun/Desktop/NeurIPS25/data_stored/data_miss_mask/SynthSurvey"
     )
     create_missing_masks(source_dir, target_dir)
