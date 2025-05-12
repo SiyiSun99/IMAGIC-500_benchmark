@@ -121,8 +121,8 @@ To split the dataset into training and testing sets, run:
 python Preprocessing/train_test_split.py
 ```
 
-- This will generate two CSV files (`C19_train.csv` and `C19_test.csv`) containing 24 features.
-- The target variable (`cat_HEALTH2`) for train and test sets is stored separately in `C19_train_y.csv` and `C19_test_y.csv`.
+- This will generate two CSV files (`SynthSurvey_train.csv` and `SynthSurvey_test.csv`) containing 18 features.
+- The target variable (`cat_educ_attain`) for train and test sets is stored separately in `SynthSurvey_train_y.csv` and `SynthSurvey_test_y.csv`.
 
 ### 2. 🎲 Generate Missingness (R Script)
 
