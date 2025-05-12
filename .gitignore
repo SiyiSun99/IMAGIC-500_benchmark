@@ -1,0 +1,28 @@
+# Byte-compiled / cache files
+__pycache__/
+
+# Virtual environment
+venv/
+env/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VSCode settings
+.vscode/
+
+# Mac OS files
+.DS_Store
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Python dependency files
+*.egg-info/
+
+# Environment variables
+.env
+
+# dataset
+*.csv
