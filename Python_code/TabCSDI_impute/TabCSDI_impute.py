@@ -34,25 +34,11 @@ nsample = 100
 os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 
 ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
-path = "/home/cs-sun2/CMIE_Project/Python_code/TabCSDI_impute/parameters/" + config
+path = "/Users/siysun/Desktop/NeurIPS25/Python_code/TabCSDI_impute/parameters/" + config
 with open(path, "r") as f:
     config = yaml.safe_load(f)
 
 config["model"]["is_unconditional"] = unconditional
-
-
-def round_to_nearest_half(value):
-    """
-    Rounds a float value to the nearest 0.5
-
-    Args:
-        value (float): The value to round
-
-    Returns:
-        float: The value rounded to the nearest 0.5
-    """
-    return round(value * 2) / 2
-
 
 def round_int(series, cate_num):
     """
@@ -79,7 +65,7 @@ class tabular_Dataset(Dataset):
         full_data,
         new_cols_order,
         cont_list,
-        eval_length=24,
+        eval_length=17,
         use_index_list=None,
         seed=0,
         mode="train",
@@ -95,6 +81,7 @@ class tabular_Dataset(Dataset):
         )
 
         mask_data = pd.read_csv(mask_path)
+        mask_data.drop(columns = "cat_hid", inplace = True)
         mask_data = mask_data.reindex(columns=new_cols_order)
         self.observed_values = (
             full_data.mask(mask_data.astype(bool), 0).astype(float).values
@@ -132,20 +119,19 @@ class tabular_Dataset(Dataset):
     def __len__(self):
         return len(self.use_index_list)
 
-
-cohorts = ["C19"]
+cohorts = ["SynthSurvey"]
 missing_method = ["MCAR", "MAR", "MNAR"]
 missing_ratio = [10, 20, 30, 40, 50]
 SampleTime = 5
 
 ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
 # Define paths
-base_path = Path("/Users/siysun/Desktop/PhD/SynthCPHS_benchmark/data_stored")
+base_path = Path("/Users/siysun/Desktop/NeurIPS25/data_stored")
 
 ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
 # Output path for time recording
 output_file = Path(
-    "/Users/siysun/Desktop/PhD/SynthCPHS_benchmark/imputation_times_tabcsdi.csv"
+    f"/Users/siysun/Desktop/NeurIPS25/imputation_times_tabcsdi_{cohorts[0]}.csv"
 )
 time_records = []
 
@@ -153,7 +139,9 @@ for cohort in cohorts:
     train_full_path = base_path / f"Completed_data/{cohort}/{cohort}_train.csv"
     test_full_path = base_path / f"Completed_data/{cohort}/{cohort}_test.csv"
     train_full = pd.read_csv(train_full_path)
+    train_full.drop(columns = "cat_hid", inplace = True)
     test_full = pd.read_csv(test_full_path)
+    test_full.drop(columns = "cat_hid", inplace = True)
 
     # preprocessing
     scaler = MinMaxScaler()
@@ -275,8 +263,6 @@ for cohort in cohorts:
                         out_train_df[col] = tem_encoder.inverse_transform(
                             out_train_df[col]
                         )
-                    elif col.startswith("con_TS_ON"):
-                        out_train_df[col] = round_to_nearest_half(out_train_df[col])
                     else:
                         out_train_df[col] = round(out_train_df[col])
 
@@ -302,8 +288,6 @@ for cohort in cohorts:
                         out_test_df[col] = tem_encoder.inverse_transform(
                             out_test_df[col]
                         )
-                    elif col.startswith("con_TS_ON"):
-                        out_test_df[col] = round_to_nearest_half(out_test_df[col])
                     else:
                         out_test_df[col] = round(out_test_df[col])
 
