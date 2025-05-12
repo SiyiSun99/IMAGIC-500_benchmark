@@ -1,7 +1,7 @@
-# 📊 SynthCPHS: A 1-Million Sample Synthetic Household Survey Dataset and Imputation Benchmark
+# 📊 IMAGIC-500: IMputation benchmark on A Generative Imaginary Country (500k samples)
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Dataset-SynthCPHS-blue" alt="Dataset Badge">
+  <img src="https://img.shields.io/badge/Dataset-IMAGIC%25--500-blue" alt="Dataset Badge">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License Badge">
   <img src="https://img.shields.io/badge/Benchmark-14%20Methods-orange" alt="Benchmark Badge">
   <img src="https://img.shields.io/badge/Missingness-MCAR%2FMAR%2FMNAR-purple" alt="Missingness Badge">
