@@ -22,7 +22,7 @@ def round_to_nearest_half(value):
 
 cohorts = ["SynthSurvey"]
 ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
-base_path = Path( f"/Users/siysun/Desktop/NeurIPS25/imputation_times_mean_mode_{cohorts[0]}.csv")
+base_path = Path("/Users/siysun/Desktop/NeurIPS25/data_stored")
 
 methods = ["MCAR", "MAR", "MNAR"]
 ratios = [10, 20, 30, 40, 50]
