@@ -657,18 +657,18 @@ class MVImputer(object):
 
 if __name__ == "__main__":
     # Define cohorts, missing methods, and ratios
-    cohorts = ["C19"]
+    cohorts = ["SynthSurvey"]
     missing_methods = ["MCAR", "MAR", "MNAR"]
     missing_ratios = [10, 20, 30, 40, 50]
     SampleTime = 5
     ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
-    base_path = Path("/Users/siysun/Desktop/PhD/SynthCPHS_benchmark/data_stored")
+    base_path = Path("/Users/siysun/Desktop/NeurIPS25/data_stored")
     impute_method = "dsn"
 
     ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
     # Output path for time recording
     output_file = Path(
-        "/Users/siysun/Desktop/PhD/SynthCPHS_benchmark/imputation_times_dsn_C19_synthetic.csv"
+     f"/Users/siysun/Desktop/NeurIPS25/imputation_times_mean_mode_{cohorts[0]}.csv"
     )
     time_records = []
 
