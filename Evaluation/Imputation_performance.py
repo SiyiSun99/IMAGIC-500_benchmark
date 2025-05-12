@@ -23,13 +23,14 @@ def z_score_normalize(data, mean, std):
     return (data - mean) / std
 
 
-cohorts = ["C19"]
+cohorts = ["SynthSurvey"]
 missing_methods = ["MCAR", "MAR", "MNAR"]
 missing_ratios = [10, 20, 30, 40, 50]
-sample_time = 5
-impute_methods = ["diffputer"]  # input the imputation methods you want to evaluate
+sample_time = 3
+impute_methods = ["mean","missforest"]  # input the imputation methods you want to evaluate
 mode = "train"  # "train" or "test"
-base_path = Path("/Users/siysun/Desktop/PhD/SynthCPHS_benchmark/data_stored")
+## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
+base_path = Path("../data_stored")
 
 results = []
 
@@ -176,5 +177,5 @@ for method in impute_methods:
 results_df = pd.DataFrame(results)
 
 # Save results to CSV
-output_path = f"/Users/siysun/Desktop/PhD/SynthCPHS_benchmark/imputation_metrics_results_C19_Synthetic_{method}_{mode}.csv"
+output_path = f"../imputation_metrics_results_SynthSurvey_{method}_{mode}.csv"
 results_df.to_csv(output_path, index=False)
