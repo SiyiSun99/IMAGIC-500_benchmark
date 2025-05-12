@@ -51,20 +51,19 @@ def round_int(series, cate_num):
 
 
 ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
-base_path = Path("/Users/siysun/Desktop/PhD/SynthCPHS_benchmark/data_stored")
+cohorts = ["SynthSurvey"]
+base_path = Path("/Users/siysun/Desktop/NeurIPS25/data_stored")
 batchsize = 128  # If the batch size is larger than half the dataset's size,
 # it will be redefined in the imputation methods.
 lr = 1e-2
 
-cohort = "C19"
-methods = ["MCAR", "MAR", "MNAR"]
-ratios = [50, 40, 30, 20, 10]
-Sampletime = 5
+
+
 
 ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
 # Output path for time recording
 output_file = Path(
-    f"/Users/siysun/Desktop/PhD/SynthCPHS_benchmark/imputation_times_MOT_Synthetic_C19.csv"
+ f"/Users/siysun/Desktop/NeurIPS25/imputation_times_mean_mode_{cohorts[0]}.csv"
 )
 time_records = []
 
