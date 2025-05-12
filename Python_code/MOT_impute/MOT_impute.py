@@ -23,20 +23,6 @@ logging.debug("test")
 
 torch.set_default_tensor_type("torch.DoubleTensor")
 
-
-def round_to_nearest_half(value):
-    """
-    Rounds a float value to the nearest 0.5
-
-    Args:
-        value (float): The value to round
-
-    Returns:
-        float: The value rounded to the nearest 0.5
-    """
-    return round(value * 2) / 2
-
-
 def round_int(series, cate_num):
     """
     Maps values in a pandas Series based on conditions:
@@ -63,7 +49,7 @@ lr = 1e-2
 ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
 # Output path for time recording
 output_file = Path(
- f"/Users/siysun/Desktop/NeurIPS25/imputation_times_mean_mode_{cohorts[0]}.csv"
+ f"/Users/siysun/Desktop/NeurIPS25/imputation_times_MOT_{cohorts[0]}.csv"
 )
 time_records = []
 
@@ -82,7 +68,7 @@ test_full[con_col] = scaler.transform(test_full[con_col])
 # encode categorical feature
 encoders = {}
 for col in train_full.columns:
-    if col.startswith("cat_"):
+    if col.startswith("cat_") and col != "cat_hid":
         tem_encoder = LabelEncoder()
         train_full[col] = tem_encoder.fit_transform(train_full[col])
         test_full[col] = tem_encoder.transform(test_full[col])
@@ -150,13 +136,13 @@ for method in tqdm(methods):
 
             # decode categorical
             for col in lin_imp.columns:
-                if col.startswith("cat_"):
+                if col == "cat_hid":
+                    pass
+                elif col.startswith("cat_"):
                     tem_encoder = encoders[col]
                     cate_num = len(tem_encoder.classes_)
                     lin_imp[col] = round_int(lin_imp[col], cate_num - 1)
                     lin_imp[col] = tem_encoder.inverse_transform(lin_imp[col])
-                elif col.startswith("con_TS_ON"):
-                    lin_imp[col] = round_to_nearest_half(lin_imp[col])
                 else:
                     lin_imp[col] = round(lin_imp[col])
 
@@ -179,13 +165,13 @@ for method in tqdm(methods):
 
             # decode categorical
             for col in lin_imp_test.columns:
-                if col.startswith("cat_"):
+                if col == "cat_hid":
+                    pass
+                elif col.startswith("cat_"):
                     tem_encoder = encoders[col]
                     cate_num = len(tem_encoder.classes_)
                     lin_imp_test[col] = round_int(lin_imp_test[col], cate_num - 1)
                     lin_imp_test[col] = tem_encoder.inverse_transform(lin_imp_test[col])
-                elif col.startswith("con_TS_ON"):
-                    lin_imp_test[col] = round_to_nearest_half(lin_imp_test[col])
                 else:
                     lin_imp_test[col] = round(lin_imp_test[col])
 
