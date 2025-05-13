@@ -26,7 +26,7 @@ def z_score_normalize(data, mean, std):
 cohorts = ["SynthSurvey"]
 missing_methods = ["MCAR", "MAR", "MNAR"]
 missing_ratios = [10, 20, 30, 40, 50]
-sample_time = 3
+sample_time = 5
 impute_methods = ["mean","missforest"]  # input the imputation methods you want to evaluate
 mode = "train"  # "train" or "test"
 ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
