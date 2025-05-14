@@ -27,8 +27,23 @@ cohorts = ["SynthSurvey"]
 missing_methods = ["MCAR", "MAR", "MNAR"]
 missing_ratios = [10, 20, 30, 40, 50]
 sample_time = 5
-impute_methods = ["mean","missforest"]  # input the imputation methods you want to evaluate
-mode = "train"  # "train" or "test"
+impute_methods = [
+    "mean",
+    "mice",
+    "missforest",
+    "gain",
+    "dsan",
+    "dsn",
+    "softimpute",
+    "diffputer",
+    "MOT",
+    "remasker",
+    "miwae",
+    "hyperimpute",
+    "miracle",
+    "tabcsdi"
+] # input the imputation methods you want to evaluate
+mode = "test"  # "train" or "test"
 ## NEED TO CHANGE THE PATH BASED ON YOUR COMPUTER ##
 base_path = Path("../data_stored")
 
@@ -56,94 +71,98 @@ for method in impute_methods:
 
                 # Process each sample for each scenario
                 for sample_idx in range(sample_time):
-                    # Load missing mask
-                    mask_path = (
-                        Path(base_path)
-                        / f"data_miss_mask/{cohort}/{cohort}_{mode}/{miss_method}/miss{miss_ratio}/{sample_idx}.csv"
-                    )
-                    mask_data = pd.read_csv(mask_path)
+                    try:
+                        # Load missing mask
+                        mask_path = (
+                            Path(base_path)
+                            / f"data_miss_mask/{cohort}/{cohort}_{mode}/{miss_method}/miss{miss_ratio}/{sample_idx}.csv"
+                        )
+                        mask_data = pd.read_csv(mask_path)
 
-                    # Load imputed data
-                    imputed_path = (
-                        Path(base_path)
-                        / f"data_{method}/{cohort}/{cohort}_{mode}/{miss_method}/miss{miss_ratio}/{sample_idx}.csv"
-                    )
-                    imputed_data = pd.read_csv(imputed_path)
+                        # Load imputed data
+                        imputed_path = (
+                            Path(base_path)
+                            / f"data_{method}/{cohort}/{cohort}_{mode}/{miss_method}/miss{miss_ratio}/{sample_idx}.csv"
+                        )
+                        imputed_data = pd.read_csv(imputed_path)
 
-                    # Calculate RMSE for continuous variables
-                    if cont_cols:
-                        cont_rmse = 0
-                        total_missing = 0
+                        # Calculate RMSE for continuous variables
+                        if cont_cols:
+                            cont_rmse = 0
+                            total_missing = 0
 
-                        for col in cont_cols:
-                            # Get indices where values were missing
-                            missing_idx = mask_data[col] == 1
-                            n_missing = missing_idx.sum()
+                            for col in cont_cols:
+                                # Get indices where values were missing
+                                missing_idx = mask_data[col] == 1
+                                n_missing = missing_idx.sum()
 
-                            if n_missing > 0:
-                                # Normalize both full and imputed data using full data's min-max
-                                full_normalized = z_score_normalize(
-                                    full_data.loc[missing_idx, col],
-                                    cont_means[col],
-                                    cont_stds[col],
-                                )
-                                imputed_normalized = z_score_normalize(
-                                    imputed_data.loc[missing_idx, col],
-                                    cont_means[col],
-                                    cont_stds[col],
-                                )
-                                # Calculate squared errors using normalized values
-                                squared_errors = (
-                                    full_normalized - imputed_normalized
-                                ) ** 2
-                                cont_rmse += squared_errors.sum()
-                                total_missing += n_missing
-                                print(
-                                    f"{col}: square error = {squared_errors.sum()}, missing_number = {n_missing}"
-                                )
+                                if n_missing > 0:
+                                    # Normalize both full and imputed data using full data's min-max
+                                    full_normalized = z_score_normalize(
+                                        full_data.loc[missing_idx, col],
+                                        cont_means[col],
+                                        cont_stds[col],
+                                    )
+                                    imputed_normalized = z_score_normalize(
+                                        imputed_data.loc[missing_idx, col],
+                                        cont_means[col],
+                                        cont_stds[col],
+                                    )
+                                    # Calculate squared errors using normalized values
+                                    squared_errors = (
+                                        full_normalized - imputed_normalized
+                                    ) ** 2
+                                    cont_rmse += squared_errors.sum()
+                                    total_missing += n_missing
+                                    print(
+                                        f"{col}: square error = {squared_errors.sum()}, missing_number = {n_missing}"
+                                    )
 
-                        if total_missing > 0:
-                            cont_rmse = np.sqrt(cont_rmse / total_missing)
-                            cont_rmse_list.append(cont_rmse)
-                            print(total_missing)
+                            if total_missing > 0:
+                                cont_rmse = np.sqrt(cont_rmse / total_missing)
+                                cont_rmse_list.append(cont_rmse)
+                                print(total_missing)
 
-                    # Calculate accuracy and ROC AUC for categorical variables
-                    if cat_cols:
-                        cat_acc = 0
-                        total_missing = 0
-                        cat_f1_score = 0
-                        total_cols_with_f1_score = 0
+                        # Calculate accuracy and ROC AUC for categorical variables
+                        if cat_cols:
+                            cat_acc = 0
+                            total_missing = 0
+                            cat_f1_score = 0
+                            total_cols_with_f1_score = 0
 
-                        for col in cat_cols:
-                            missing_idx = mask_data[col] == 1
-                            n_missing = missing_idx.sum()
+                            for col in cat_cols:
+                                missing_idx = mask_data[col] == 1
+                                n_missing = missing_idx.sum()
 
-                            if n_missing > 0:
-                                # Calculate accuracy for missing values
-                                correct = (
-                                    full_data.loc[missing_idx, col]
-                                    == imputed_data.loc[missing_idx, col]
-                                ).sum()
-                                cat_acc += correct
-                                total_missing += n_missing
+                                if n_missing > 0:
+                                    # Calculate accuracy for missing values
+                                    correct = (
+                                        full_data.loc[missing_idx, col]
+                                        == imputed_data.loc[missing_idx, col]
+                                    ).sum()
+                                    cat_acc += correct
+                                    total_missing += n_missing
 
-                                # Calculate F1 score
-                                # Get true values and predicted values
-                                y_true = full_data.loc[missing_idx, col].values
-                                y_pred = imputed_data.loc[missing_idx, col].values
+                                    # Calculate F1 score
+                                    # Get true values and predicted values
+                                    y_true = full_data.loc[missing_idx, col].values
+                                    y_pred = imputed_data.loc[missing_idx, col].values
 
-                                col_f1_score = f1_score(y_true, y_pred, average="macro")
-                                cat_f1_score += col_f1_score
-                                total_cols_with_f1_score += 1
-                                print(f"{col}: ROC AUC = {col_f1_score}")
+                                    col_f1_score = f1_score(y_true, y_pred, average="macro")
+                                    cat_f1_score += col_f1_score
+                                    total_cols_with_f1_score += 1
+                                    print(f"{col}: ROC AUC = {col_f1_score}")
 
-                        if total_missing > 0:
-                            cat_acc = cat_acc / total_missing
-                            cat_acc_list.append(cat_acc)
+                            if total_missing > 0:
+                                cat_acc = cat_acc / total_missing
+                                cat_acc_list.append(cat_acc)
 
-                        if total_cols_with_f1_score > 0:
-                            cat_f1_score = cat_f1_score / total_cols_with_f1_score
-                            cat_f1_score_list.append(cat_f1_score)
+                            if total_cols_with_f1_score > 0:
+                                cat_f1_score = cat_f1_score / total_cols_with_f1_score
+                                cat_f1_score_list.append(cat_f1_score)
+                                
+                    except Exception as e:
+                        print(f"{method}-{miss_method}-{miss_ratio}-{sample_idx} failed: {e}")
 
                 # Calculate mean and variance of metrics
                 cont_rmse_mean = np.mean(cont_rmse_list) if cont_rmse_list else np.nan
@@ -177,5 +196,5 @@ for method in impute_methods:
 results_df = pd.DataFrame(results)
 
 # Save results to CSV
-output_path = f"../imputation_metrics_results_SynthSurvey_{method}_{mode}.csv"
+output_path = f"../imputation_metrics_results_SynthSurvey_{mode}.csv"
 results_df.to_csv(output_path, index=False)
