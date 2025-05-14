@@ -78,7 +78,7 @@ preprocessor = ColumnTransformer(
     ]
 )
 
-# Option 2: Alternative approach - exclude very rare classes from SMOTE
+# exclude very rare classes from SMOTE
 # Get classes with at least 2 samples (minimum needed for k_neighbors=1)
 classes_to_oversample = y.value_counts()[y.value_counts() >= 2].index.tolist()
 sampling_strategy = {cls: max(y.value_counts()) for cls in classes_to_oversample if cls != y.value_counts().idxmax()}
@@ -177,8 +177,8 @@ methods_folder = [
     "data_miracle",
 ]  # input the imputation methods u want to evaluate
 # Note: if you evaluate part of the methods, you need to combinre the result manually
-test_number = 5  # sample times
-base_path = Path("/Users/siysun/Desktop/NeurIPS25/data_stored")
+test_number = 3  # sample times
+base_path = Path("../data_stored")
 roc = []
 acc = []
 
@@ -192,34 +192,61 @@ for mechanism in tqdm(miss_mechanism):
         for folder in tqdm(methods_folder):
             score_list_roc = []
             score_list_acc = []
+            
             for n in tqdm(range(test_number)):
-                # Load missing mask
-                mask_path = (
-                    Path(base_path)
-                    / f"data_miss_mask/{cohort}/{cohort}_test/{mechanism}/miss{ratio}/{n}.csv"
-                )
-                mask_data = pd.read_csv(mask_path)
+                try: # handle in case still contains missingness
+                    # Load missing mask
+                    mask_path = (
+                        Path(base_path)
+                        / f"data_miss_mask/{cohort}/{cohort}_test/{mechanism}/miss{ratio}/{n}.csv"
+                    )
+                    mask_data = pd.read_csv(mask_path)
+                    mask_data.drop(columns = "cat_hid", inplace = True)
 
-                # Load imputed data
-                imputed_path = (
-                    Path(base_path)
-                    / f"{folder}/{cohort}/{cohort}_test/{mechanism}/miss{ratio}/{n}.csv"
-                )
-                imputed_data = pd.read_csv(imputed_path)
+                    # Load imputed data
+                    imputed_path = (
+                        Path(base_path)
+                        / f"{folder}/{cohort}/{cohort}_test/{mechanism}/miss{ratio}/{n}.csv"
+                    )
+                    imputed_data = pd.read_csv(imputed_path)
+                    imputed_data.drop(columns = "cat_hid", inplace = True)
 
-                # Create a copy of the original dataset to avoid modifying it
-                result_dataset = test_data.copy()
-                result_dataset = result_dataset.mask(
-                    mask_data.astype(bool), imputed_data
-                )
-                imputed_data = result_dataset
+                    # Create a copy of the original dataset to avoid modifying it
+                    result_dataset = test_data.copy()
+                    result_dataset = result_dataset.mask(
+                        mask_data.astype(bool), imputed_data
+                    )
+                    imputed_data = result_dataset
 
-                # Make predictions
-                y_pred = pipeline.predict(imputed_data)
-                y_pred_proba = pipeline.predict_proba(imputed_data)[:, 1]
+                    # Make predictions
+                    y_pred = pipeline.predict(imputed_data)
+                    y_pred_proba = pipeline.predict_proba(imputed_data)
 
-                score_list_roc.append(roc_auc_score(y_test, y_pred_proba))
-                score_list_acc.append(accuracy_score(y_test, y_pred))
+                    # Calculate ROC AUC for each class
+                    for i, class_name in enumerate(np.unique(y_test)):
+                        # If your classes are not 0,1,2,... but have actual meaningful values
+                        class_index = np.where(pipeline.classes_ == class_name)[0][0]
+                        class_proba = y_pred_proba[:, class_index]
+
+                        # Create binary labels for this class (one-vs-rest)
+                        y_test_binary = (y_test == class_name).astype(int)
+
+                        try:
+                            class_auc = roc_auc_score(y_test_binary, class_proba)
+                        except Exception as e:
+                            print(f"Could not calculate AUC for class {class_name}: {e}")
+
+                    weighted_auc = roc_auc_score(
+                        y_test, 
+                        y_pred_proba,
+                        multi_class='ovr',
+                        average='weighted'
+                    )
+                    score_list_roc.append(weighted_auc)
+                    score_list_acc.append(accuracy_score(y_test, y_pred))
+                except Exception as e:
+                    print(f"{folder}-{mechanism}-{ratio}-{n} still contains NAN: {e}")
+                    
             roc_methods.append(
                 f"{round(np.mean(score_list_roc),3)}\u00b1{round(np.std(score_list_roc),3)}"
             )
@@ -232,29 +259,32 @@ for mechanism in tqdm(miss_mechanism):
 # Save results to CSV files
 pd.DataFrame(
     roc, columns=["missing_machenism", "missing_ratio"] + methods_folder
-).to_csv(f"/Users/siysun/Desktop/NeurIPS25/Downstream_temp_ROC.csv")
+).to_csv(f"../Downstream_temp_ROC.csv", index = False)
 pd.DataFrame(
     acc, columns=["missing_machenism", "missing_ratio"] + methods_folder
-).to_csv(f"/Users/siysun/Desktop/NeurIPS25/Downstream_temp_ACC.csv")
-
+).to_csv(f"../Downstream_temp_ACC.csv", index = False)
 ######################## (Optional) Calculate the performance degradation ########################
 # def percent_roc(s):
 #     mean_v = float(s.split('\u00B1')[0])
 #     std_v = float(s.split('\u00B1')[1])
-#     mean_p = round((mean_v-0.7378)*100/0.7378,1) # replace 0.7378 with the baseline ROC-AUC score
-#     std_p = round(std_v*100/0.7378,1) # replace 0.7378 with the baseline ROC-AUC score
+#     mean_p = round((mean_v-0.9984)*100/0.9984,1) # replace 0.9984 with the baseline ROC-AUC score
+#     std_p = round(std_v*100/0.9984,1) # replace 0.9984 with the baseline ROC-AUC score
 #     new_s = str(mean_p)+'%\u00B1'+str(std_p)+'%'
 #     return new_s
 
 # def percent_acc(s):
 #     mean_v = float(s.split('\u00B1')[0])
 #     std_v = float(s.split('\u00B1')[1])
-#     mean_p = round((mean_v-0.9954)*100/0.9954,1)  # replace 0.9954 with the baseline accuracy score
-#     std_p = round(std_v*100/0.9954,1)  # replace 0.9954 with the baseline accuracy score
+#     mean_p = round((mean_v-0.9773)*100/0.9773,1)  # replace 0.9954 with the baseline accuracy score
+#     std_p = round(std_v*100/0.9773,1)  # replace 0.9954 with the baseline accuracy score
 #     new_s = str(mean_p)+'%\u00B1'+str(std_p)+'%'
 #     return new_s
 
-# # suppose you combine the results of all methods (axis = 1) into this csv file (e.g. ROC-AUC score)
-# results = pd.read_csv('../C19_synthetic_ROC_downstream.csv', index_col=None,header = 0)
-# results_new = results.iloc[:,2:].applymap(percent_roc)  # YOU CAN REPLACE THE FUNCTION NAME WITH percent_acc
-# results_new.to_csv('downstream_performance_ROC.csv',index = False)
+# # calculate the performance degradation - ROC
+# results = pd.read_csv(f'../Downstream_temp_ROC.csv', index_col=None, header = 0)
+# results_new = results.iloc[:,2:].applymap(percent_roc) 
+# results_new.to_csv('../downstream_performance_ROC.csv',index = False)
+# # calculate the performance degradation - ACC
+# results = pd.read_csv(f'../Downstream_temp_ACC.csv', index_col=None, header = 0)
+# results_new = results.iloc[:,2:].applymap(percent_acc)  
+# results_new.to_csv('../downstream_performance_ACC.csv',index = False)
